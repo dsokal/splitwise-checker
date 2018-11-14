@@ -18,11 +18,11 @@ const mapStateToProps = (state, ownProps) => {
 };
 
 class GroupScreen extends React.Component {
-  static navigationOptions = ({ navigation, screenProps }) => {
+  static navigationOptions = ({ navigation }) => {
     const { params = {} } = navigation.state;
-    const { group } = screenProps;
+    const groupName = navigation.getParam('groupName', 'unknown');
     return {
-      title: `Group: ${group ? group.name : 'unknown'}`,
+      title: `Group: ${groupName}`,
       headerRight: (
         <Icon
           name="attach-money"
@@ -120,9 +120,18 @@ class GroupScreen extends React.Component {
   }
 
   componentDidMount() {
+    const { group } = this.props;
     this.props.navigation.setParams({
+      groupName: group.name,
       handleCurrencyTogglePressed: this._handleCurrencyTogglePressed,
     });
+  }
+
+  componentDidUpdate(prevProps) {
+    const groupName = this.props.group.name;
+    if (groupName !== prevProps.group.name) {
+      this.props.navigation.setParams({ groupName });
+    }
   }
 
   _indexMembersById(members) {
